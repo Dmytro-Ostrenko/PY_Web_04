@@ -5,6 +5,7 @@ from datetime import datetime
 import threading
 import os
 import time
+from pathlib import Path
 
 app = Flask(__name__)
 
@@ -81,14 +82,20 @@ def save_to_json(data):
         
 def save_to_json(data):
     add_message(data['username'], data['message'])
+    current_directory = Path(__file__).resolve().parent
+    file_path = current_directory / 'storage' / 'data.json'
+    
     try:
-        with open('storage/data.json', 'r') as json_file:
+        with open(file_path, 'r') as json_file:
             existing_data = json.load(json_file)
     except FileNotFoundError:
         existing_data = {}
+    
     existing_data.update(messages)
-    with open('storage/data.json', 'w') as json_file:
+  
+    with open(file_path, 'w') as json_file:
         json.dump(existing_data, json_file, indent=2)
+
         
 
 if __name__ == '__main__':
