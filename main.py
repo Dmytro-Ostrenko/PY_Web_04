@@ -11,6 +11,7 @@ app = Flask(__name__)
 web_port = 3000
 socket_port = 5000
 UDP_IP = '127.0.0.1'
+messages = {}
 
 @app.route('/')
 def index():
@@ -67,12 +68,28 @@ def send_to_socket(data):
         server_address = (UDP_IP, socket_port)
         s.sendto(json.dumps(data).encode('utf-8'), server_address)
         
+def add_message(username, message):
+    timestamp = str(datetime.now())
+    messages[timestamp] = {"username": username, "message": message}
+    return messages
+
 def save_to_json(data):
-    with open('storage/data.json', 'a') as json_file:
-        json.dump(data, json_file)
-        json_file.write('\n')
+    add_message(data['username'], data['message'])
 
-
+    with open('storage/data.json', 'w') as json_file:
+        json.dump(messages, json_file, indent=2)   
+        
+def save_to_json(data):
+    add_message(data['username'], data['message'])
+    try:
+        with open('storage/data.json', 'r') as json_file:
+            existing_data = json.load(json_file)
+    except FileNotFoundError:
+        existing_data = {}
+    existing_data.update(messages)
+    with open('storage/data.json', 'w') as json_file:
+        json.dump(existing_data, json_file, indent=2)
+        
 
 if __name__ == '__main__':
     os.makedirs('storage', exist_ok=True)
