@@ -33,14 +33,14 @@ def run_socket_server(UDP_IP, socket_port):
     try:
         while True:
             data, address = sock.recvfrom(1024)
-            print(f'Получено сообщение: {data.decode()} от: {address}')
+            print(f'Отримано повідомлення: {data.decode()} від: {address}')
             sock.sendto(data, address)
-            print(f'Отправлено сообщение: {data.decode()} по адресу: {address}')
+            print(f'Надіслано повідомлення: {data.decode()} за адресою: {address}')
             decoded_data = json.loads(data.decode('utf-8'))
             save_to_json(decoded_data)
 
     except KeyboardInterrupt:
-        print(f'Остановка сервера')
+        print(f'Stopping the server')
     finally:
         sock.close()
 
@@ -81,3 +81,4 @@ if __name__ == '__main__':
     socket_thread.start()
 
     app.run(debug=True, port=web_port, use_reloader=False)
+
